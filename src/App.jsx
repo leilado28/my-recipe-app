@@ -795,7 +795,7 @@ Return ONLY a valid JSON object with these exact fields:
 
 Make it a realistic healthy, low-calorie high-protein recipe. Return ONLY the JSON, no other text.`;
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/generate-recipe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
