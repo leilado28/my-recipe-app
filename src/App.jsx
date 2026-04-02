@@ -846,13 +846,26 @@ function MyRecipesView({ recipes, onView, onAddToPlanner, onEdit }) {
 // ── APP ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [view,setView]=useState("discover");
-  const [recipes,setRecipes]=useState(INITIAL_RECIPES);
-  const [weeklyPlan,setWeeklyPlan]=useState({});
+  const [recipes,setRecipes]=useState(()=>{
+  try {
+    const saved = localStorage.getItem("recipes");
+    return saved ? JSON.parse(saved) : INITIAL_RECIPES;
+  } catch { return INITIAL_RECIPES; }
+});
+const [weeklyPlan,setWeeklyPlan]=useState(()=>{
+  try {
+    const saved = localStorage.getItem("weeklyPlan");
+    return saved ? JSON.parse(saved) : {};
+  } catch { return {}; }
+});
   const [selectedRecipe,setSelectedRecipe]=useState(null);
   const [editingRecipe,setEditingRecipe]=useState(null);
   const [toast,setToast]=useState("");
 
-  function saveRecipe(r){setRecipes(prev=>[...prev,{...r,tags:[...(r.tags||[]),"Custom"]}]);}
+  useEffect(()=>{ try { localStorage.setItem("recipes", JSON.stringify(recipes)); } catch{} },[recipes]);
+useEffect(()=>{ try { localStorage.setItem("weeklyPlan", JSON.stringify(weeklyPlan)); } catch{} },[weeklyPlan]);
+
+function saveRecipe(r){setRecipes(prev=>[...prev,{...r,tags:[...(r.tags||[]),"Custom"]}]);}
   function updateRecipe(updated){
     setRecipes(r=>r.map(x=>x.id===updated.id?updated:x));
     setWeeklyPlan(plan=>{
